@@ -2,8 +2,12 @@
 #
 # EOF (end-of-file) token is used to indicate that
 # there is no more input left for lexical analysis
-INTEGER, PLUS, EOF = 'INTEGER', 'PLUS', 'EOF'
+INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
 
+# Part 1 exercises:
+# 1. Modify the code to allow multiple-digit integers in the input, for example “12+3”
+# 2. Add a method that skips whitespace characters so that your calculator can handle inputs with whitespace characters like ” 12 + 3”
+# 3. Modify the code and instead of ‘+’ handle ‘-‘ to evaluate subtractions like “7-5”
 
 class Token(object):
     def __init__(self, type, value):
@@ -47,39 +51,44 @@ class Interpreter(object):
         apart into tokens. One token at a time.
         """
         text = self.text
-
-        # is self.pos index past the end of the self.text ?
-        # if so, then return EOF token because there is no more
-        # input left to convert into tokens
-        if self.pos > len(text) - 1:
+        
+        # return EOF token if we're past the end of the input text
+        if self.pos >= len(text):
             return Token(EOF, None)
-
-        # get a character at the position self.pos and decide
-        # what token to create based on the single character
-        current_char = text[self.pos]
-
-        # if the character is a digit then convert it to
-        # integer, create an INTEGER token, increment self.pos
-        # index to point to the next character after the digit,
-        # and return the INTEGER token
-        if current_char.isdigit():
-            token = Token(INTEGER, int(current_char))
+        
+        # if current char is a space, skip to the next char
+        if text[self.pos] == ' ':
             self.pos += 1
-            return token
+            return self.get_next_token()
 
-        if current_char == '+':
-            token = Token(PLUS, current_char)
+        # if the current char is a digit, get all the next digits (if any)
+        # and return an INTEGER token with the int value of the resulting number
+        if text[self.pos].isdigit():
+            number = text[self.pos]
             self.pos += 1
-            return token
+            while self.pos < len(text) and text[self.pos].isdigit():
+                number += text[self.pos]
+                self.pos += 1
+            return Token(INTEGER, int(number))
 
+        # if the current char is a plus sign, return our PLUS token
+        if text[self.pos] == '+':
+            self.pos += 1
+            return Token(PLUS, '+')
+            
+        if text[self.pos] == '-':
+            self.pos += 1
+            return Token(MINUS, '-')
+
+        # otherwise, throw a parse error
         self.error()
 
-    def eat(self, token_type):
+    def eat(self, token_types):
         # compare the current token type with the passed token
         # type and if they match then "eat" the current token
         # and assign the next token to the self.current_token,
         # otherwise raise an exception.
-        if self.current_token.type == token_type:
+        if self.current_token.type in token_types:
             self.current_token = self.get_next_token()
         else:
             self.error()
@@ -91,23 +100,23 @@ class Interpreter(object):
 
         # we expect the current token to be a single-digit integer
         left = self.current_token
-        self.eat(INTEGER)
+        self.eat([INTEGER])
 
-        # we expect the current token to be a '+' token
+        # we expect the current token to be a '+' or '-' token
         op = self.current_token
-        self.eat(PLUS)
+        self.eat([PLUS, MINUS])
 
         # we expect the current token to be a single-digit integer
         right = self.current_token
-        self.eat(INTEGER)
+        self.eat([INTEGER])
         # after the above call the self.current_token is set to
         # EOF token
 
-        # at this point INTEGER PLUS INTEGER sequence of tokens
+        # at this point INTEGER PLUS INTEGER or INTEGER MINUS INTEGER sequence of tokens
         # has been successfully found and the method can just
         # return the result of adding two integers, thus
         # effectively interpreting client input
-        result = left.value + right.value
+        result = left.value + right.value if op.type == PLUS else left.value - right.value
         return result
 
 
