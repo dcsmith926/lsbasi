@@ -1,0 +1,58 @@
+Part 1
+--------------------------------------------------------------------------------
+
+1. What is an interpreter?
+
+    A program that processes and executes source code without translating it
+    into machine code.
+
+2. What is a compiler?
+
+    A program that translates source code into machine code.
+
+3. What's the difference between an interpreter and a compiler?
+
+    Compilers translate the source code representation of a program into the
+    relevant machine code, typically by first translating to assembly langauge,
+    and from there, to machine code. Compilers may also link together different
+    files or libraries into the single resulting output executable file. The
+    compiler does not run the executable file, since it is run by the machine
+    itself.
+    
+    Interpreters process and execute the source code itself, without compiling
+    it down into machine code. Interpreters may translate the source code into
+    some intermediate language before executing the program.
+
+4. What is a token?
+
+    A token is an object that represents some specific pattern of characters
+    in the source code. Our tokens here have a type and a value.
+
+5. What is the name of the process that breaks input apart into tokens?
+
+    Lexical analysis.
+
+6. What is the part of the interpreter that does lexical analysis called?
+
+    The lexical analyzer.
+
+7. What are the other common names for that part of an inpterpreter or a compiler?
+
+    A lexer, scanner, or tokenizer.
+    
+Part 2
+--------------------------------------------------------------------------------
+
+1. What is a lexeme?
+
+    A lexeme is a sequence of characters which form a token.
+    
+2. What is the name of the process that finds the structure in the stream of tokens,
+   or put differently, what is the name of the process that recognizes a certain
+   phrase in that stream of tokens?
+   
+    Parsing.
+    
+3. What is the name of the part of the interpreter (compiler) that does parsing?
+
+    The parser.
