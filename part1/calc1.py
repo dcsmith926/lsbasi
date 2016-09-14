@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Token types
 #
 # EOF (end-of-file) token is used to indicate that
@@ -10,6 +12,7 @@ INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
 # 3. Modify the code and instead of ‘+’ handle ‘-‘ to evaluate subtractions like “7-5”
 
 class Token(object):
+    
     def __init__(self, type, value):
         # token type: INTEGER, PLUS, or EOF
         self.type = type
@@ -33,6 +36,7 @@ class Token(object):
 
 
 class Interpreter(object):
+    
     def __init__(self, text):
         # client string input, e.g. "3+5"
         self.text = text
@@ -75,7 +79,8 @@ class Interpreter(object):
         if text[self.pos] == '+':
             self.pos += 1
             return Token(PLUS, '+')
-            
+        
+        # if the current char is a minus sign, return our MINUS token
         if text[self.pos] == '-':
             self.pos += 1
             return Token(MINUS, '-')
@@ -84,9 +89,9 @@ class Interpreter(object):
         self.error()
 
     def eat(self, token_types):
-        # compare the current token type with the passed token
-        # type and if they match then "eat" the current token
-        # and assign the next token to the self.current_token,
+        # check if the current token's type is one of the passed
+        # token types. if so, then "eat" the current token,
+        # and assign the next token to self.current_token,
         # otherwise raise an exception.
         if self.current_token.type in token_types:
             self.current_token = self.get_next_token()
@@ -94,7 +99,8 @@ class Interpreter(object):
             self.error()
 
     def expr(self):
-        """expr -> INTEGER PLUS INTEGER"""
+        """expr -> INTEGER (PLUS | MINUS) INTEGER"""
+        
         # set current token to the first token taken from the input
         self.current_token = self.get_next_token()
 
@@ -109,13 +115,9 @@ class Interpreter(object):
         # we expect the current token to be a single-digit integer
         right = self.current_token
         self.eat([INTEGER])
-        # after the above call the self.current_token is set to
-        # EOF token
+        
+        # after the above call the self.current_token is set to EOF token
 
-        # at this point INTEGER PLUS INTEGER or INTEGER MINUS INTEGER sequence of tokens
-        # has been successfully found and the method can just
-        # return the result of adding two integers, thus
-        # effectively interpreting client input
         result = left.value + right.value if op.type == PLUS else left.value - right.value
         return result
 

@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 # Token types
 #
 # EOF (end-of-file) token is used to indicate that

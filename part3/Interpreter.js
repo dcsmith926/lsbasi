@@ -1,19 +1,6 @@
-'use strict';
+import Token from './Token';
 
-class Token {
-  
-  constructor(type, value) {
-    this.type = type;
-    this.value = value;
-  }
-  
-  toString() {
-    return `Token(${this.type}, ${this.value})`;
-  }
-  
-}
-
-class Interpreter {
+export default class Interpreter {
   
   constructor() {
     this.clear();
@@ -38,10 +25,7 @@ class Interpreter {
       this.currentToken = this.getNextToken();
     }
     else {
-      let typeStr = expectedTypes.shift();
-      while (expectedTypes.length) {
-        typeStr += ` or ${expectedTypes.shift()}`;
-      }
+      let typeStr = expectedTypes.join(' or ');
       throw new SyntaxError(`Expected a token of type ${typeStr}, instead got: ${this.currentToken.toString()}`);
     }
   }
@@ -75,8 +59,7 @@ class Interpreter {
       }
       
       if (/\d/.test(this.currentChar)) {
-        let value = this.getInt();
-        return new Token('INTEGER', value);
+        return new Token('INTEGER', this.getInt());
       }
       
       if (this.currentChar === '+') {
@@ -102,9 +85,9 @@ class Interpreter {
     
     // expect an INTEGER to start of
     this.currentToken = this.getNextToken();
+    this.eat(['INTEGER']);
     
     this.currentValue = this.currentToken.value;
-    this.eat(['INTEGER']);
     
     // now expect a PLUS or MINUS followed by and INTEGER, any number of times
     while (this.currentToken.type !== 'EOF') {

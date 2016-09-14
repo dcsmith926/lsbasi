@@ -59,7 +59,7 @@ class Interpreter(object):
         while self.current_char is not None and self.current_char.isspace():
             self.advance()
 
-    def integer(self):
+    def get_int(self):
         """Return a (multidigit) integer consumed from the input."""
         result = ''
         while self.current_char is not None and self.current_char.isdigit():
@@ -80,7 +80,7 @@ class Interpreter(object):
                 continue
 
             if self.current_char.isdigit():
-                return Token(INTEGER, self.integer())
+                return Token(INTEGER, self.get_int())
 
             if self.current_char == '+':
                 self.advance()
