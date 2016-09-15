@@ -1,6 +1,5 @@
 import unittest
 
-
 class LexerTestCase(unittest.TestCase):
     def makeLexer(self, text):
         from calc5 import Lexer

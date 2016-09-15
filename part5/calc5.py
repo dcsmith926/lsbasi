@@ -2,8 +2,8 @@
 #
 # EOF (end-of-file) token is used to indicate that
 # there is no more input left for lexical analysis
-INTEGER, PLUS, MINUS, MUL, DIV, EOF = (
-    'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 'EOF'
+INTEGER, PLUS, MINUS, MUL, DIV, L_PAREN, R_PAREN, EOF = (
+    'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', '(', ')', 'EOF'
 )
 
 
@@ -92,6 +92,14 @@ class Lexer(object):
             if self.current_char == '/':
                 self.advance()
                 return Token(DIV, '/')
+            
+            if self.current_char == '(':
+                self.advance()
+                return Token(L_PAREN, '(')
+            
+            if self.current_char == ')':
+                self.advance()
+                return Token(R_PAREN, ')')
 
             self.error()
 
@@ -99,6 +107,7 @@ class Lexer(object):
 
 
 class Interpreter(object):
+    
     def __init__(self, lexer):
         self.lexer = lexer
         # set current token to the first token taken from the input
@@ -118,13 +127,20 @@ class Interpreter(object):
             self.error()
 
     def factor(self):
-        """factor : INTEGER"""
+        """factor : INTEGER | LPAREN expr RPAREN"""
         token = self.current_token
-        self.eat(INTEGER)
-        return token.value
+        if token.type == L_PAREN:
+            self.eat(L_PAREN)
+            result = self.expr()
+            self.eat(R_PAREN)
+        elif token.type == INTEGER:
+            self.eat(INTEGER)
+            result = token.value
+        return result
 
     def term(self):
         """term : factor ((MUL | DIV) factor)*"""
+        
         result = self.factor()
 
         while self.current_token.type in (MUL, DIV):
@@ -139,25 +155,21 @@ class Interpreter(object):
         return result
 
     def expr(self):
-        """Arithmetic expression parser / interpreter.
-
-        calc>  14 + 2 * 3 - 6 / 2
-        17
-
-        expr   : term ((PLUS | MINUS) term)*
-        term   : factor ((MUL | DIV) factor)*
-        factor : INTEGER
         """
+        Arithmetic expression parser / interpreter.
+        expr : term ((PLUS | MINUS) term)*
+        """
+        
         result = self.term()
 
         while self.current_token.type in (PLUS, MINUS):
             token = self.current_token
             if token.type == PLUS:
                 self.eat(PLUS)
-                result = result + self.term()
+                result = result + self.expr()
             elif token.type == MINUS:
                 self.eat(MINUS)
-                result = result - self.term()
+                result = result - self.expr()
 
         return result
 
