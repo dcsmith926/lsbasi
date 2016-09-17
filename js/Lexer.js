@@ -1,6 +1,6 @@
 const Token = require('./Token');
 
-module.exports = class Lexer {
+class Lexer {
   
   constructor(text) {
     this.text = text;
@@ -27,12 +27,12 @@ module.exports = class Lexer {
   }
   
   getInteger() {
-    const intChars = [];
+    let integer = '';
     while (/^\d$/.test(this.currentChar)) {
-      intChars.push(this.currentChar);
+      integer += this.currentChar;
       this.advance();
     }
-    return parseInt(intChars.join(''), 10);
+    return parseInt(integer);
   }
   
   getNextToken() {
@@ -86,4 +86,6 @@ module.exports = class Lexer {
     return new Token(Token.EOF, null);
   }
   
-};
+}
+
+module.exports = Lexer;
