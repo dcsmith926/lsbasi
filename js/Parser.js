@@ -142,12 +142,12 @@ class Parser {
     let token = this.currentToken;
     
     if (token.type === Token.PLUS) {
-      this.eat(token.PLUS);
+      this.eat(Token.PLUS);
       return new AST.UnaryOpNode(token, this.factor());
     }
     
     if (token.type === Token.MINUS) {
-      this.eat(token.MINUS);
+      this.eat(Token.MINUS);
       return new AST.UnaryOpNode(token, this.factor());
     }
     
