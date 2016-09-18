@@ -11,7 +11,10 @@ class Token {
   
 }
 
+// the types of tokens
 Object.assign(Token, {
+  BEGIN: 'BEGIN',
+  END: 'END',
   PLUS: 'PLUS',
   MINUS: 'MINUS',
   MUL: 'MUL',
@@ -19,6 +22,10 @@ Object.assign(Token, {
   LPAREN: 'LPAREN',
   RPAREN: 'RPAREN',
   INTEGER: 'INTEGER',
+  ID: 'ID',
+  SEMI: 'SEMI',
+  ASSIGN: 'ASSIGN',
+  DOT: 'DOT',
   EOF: 'EOF'
 });
 

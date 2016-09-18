@@ -6,4 +6,10 @@ const lexer = new Lexer(process.argv[2]);
 const parser = new Parser(lexer);
 const interpreter = new Interpreter(parser);
 
-console.log(interpreter.interpret());
+interpreter.interpret();
+
+console.log('The symbol table is: ');
+
+Object.keys(interpreter.symbolTable.table).forEach(name => {
+  console.log(name + ': ' + interpreter.symbolTable.get(name, null));
+});

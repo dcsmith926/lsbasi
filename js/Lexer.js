@@ -1,5 +1,15 @@
 const Token = require('./Token');
 
+const WHITESPACE_CHAR_REGEXP = /^\s$/;
+const DIGIT_CHAR_REGEXP = /^\d$/;
+const ALPHA_CHAR_REGEXP = /^[A-Za-z]$/;
+const ALPHA_NUM_CHAR_REGEXP = /^[A-Za-z\d]$/;
+
+const isWhitespace = char => WHITESPACE_CHAR_REGEXP.test(char);
+const isDigit = char => DIGIT_CHAR_REGEXP.test(char);
+const isAlpha = char => ALPHA_CHAR_REGEXP.test(char);
+const isAlphaNum = char => ALPHA_NUM_CHAR_REGEXP.test(char);
+
 class Lexer {
   
   constructor(text) {
@@ -22,17 +32,44 @@ class Lexer {
   }
   
   skipWhitespace() {
-    while (this.currentChar === ' ')
+    while (isWhitespace(this.currentChar)) {
       this.advance();
+    }
   }
   
   getInteger() {
     let integer = '';
-    while (/^\d$/.test(this.currentChar)) {
+    while (isDigit(this.currentChar)) {
       integer += this.currentChar;
       this.advance();
     }
     return parseInt(integer);
+  }
+  
+  id() {
+    
+    // handle identifiers and reserved words
+    
+    let id = '';
+    while (isAlphaNum(this.currentChar)) {
+      id += this.currentChar;
+      this.advance();
+    }
+    
+    if (id === 'BEGIN') {
+      return new Token(Token.BEGIN, id);
+    }
+    
+    if (id === 'END') {
+      return new Token(Token.END, id);
+    }
+    
+    return new Token(Token.ID, id);
+  }
+  
+  peek() {
+    let peekPos = this.pos + 1;
+    return peekPos > this.maxPos ? null : this.text[peekPos];
   }
   
   getNextToken() {
@@ -41,12 +78,16 @@ class Lexer {
       
       let c = this.currentChar;
       
-      if (c === ' ') {
+      if (isWhitespace(c)) {
         this.skipWhitespace();
         continue;
       }
       
-      if (/^\d$/.test(c)) {
+      if (isAlpha(c)) {
+        return this.id();
+      }
+      
+      if (isDigit(c)) {
         return new Token(Token.INTEGER, this.getInteger());
       }
       
@@ -78,6 +119,22 @@ class Lexer {
       if (c === ')') {
         this.advance();
         return new Token(Token.RPAREN, c);
+      }
+      
+      if (c === ':' && this.peek() === '=') {
+        this.advance();
+        this.advance();
+        return new Token(Token.ASSIGN, ':=');
+      }
+      
+      if (c === ';') {
+        this.advance();
+        return new Token(Token.SEMI, c);
+      }
+      
+      if (c === '.') {
+        this.advance();
+        return new Token(Token.DOT, c);
       }
       
       this.error();
